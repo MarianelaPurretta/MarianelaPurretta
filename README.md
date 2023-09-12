@@ -16,7 +16,7 @@
     <div>
          <img src = "https://media.giphy.com/media/UtEd87cLAH789bR5sk/giphy.gif" title"Python" alt="Python" width="65" height="50"/>&nbsp;
          <img src = "https://media.giphy.com/media/ln7z2eWriiQAllfVcn/giphy.gif" title"JavaScript" alt="JavaScript" width="50" height="50"/>&nbsp;
-         <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHdzN2VrNm43MDBqdjJ6cnh0M2U3NGM0ODE4bmtjbXQ4bzhlZDZscSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/hO8uTzEOefFh3Yv5gm/giphy.gif" title"Java" alt="Java" width="55" height="55"/>&nbsp;
+         <img src="https://www.canalgif.net/Gifs-animados/Informatica/Java/Imagen-animada-Java-02.gif" title"Java" alt="Java" width="60" height="60"/>&nbsp;
          <img src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYjNobWtvcXdlN2VpZ2pkeGV5eGhjeWFiYjJ3enE0NXZuM2lndzd3MSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kH6CqYiquZawmU1HI6/giphy.gif" title"Git" alt="Git" width="80" height="50"/>&nbsp;
          <img src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmljbW9yZHUxb3ptZm85YnlnOWowMGEwcWhicnZubTl5bjYyYjE0cSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/du3J3cXyzhj75IOgvA/giphy.gif" title"GitHub" alt="GitHub"width="50" height="50"/>&nbsp; 
          <img src = "https://cdn.dribbble.com/users/392441/screenshots/2592452/media/96909bc51fcaba2a26838a6670d809b0.gif" title"PS" alt="PS" width="70" height="50"/>&nbsp;
