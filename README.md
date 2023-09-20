@@ -29,13 +29,19 @@
 
 ### Actividad:
 
-   [![MarianelaPurretta GitHub Streak](http://github-readme-streak-stats.herokuapp.com?user=MarianelaPurretta&theme=onedark&locale=es&date_format=M%20j%5B%2C%20Y%5D)](https://git.io/streak-stats)
+   # 📊 GitHub Stats:
+![](https://github-readme-stats.vercel.app/api?username=MarianelaPurretta&theme=onedark&hide_border=false&include_all_commits=false&count_private=true)<br/>
+![](https://github-readme-streak-stats.herokuapp.com/?user=MarianelaPurretta&theme=onedark&hide_border=false)<br/>
+![](https://github-readme-stats.vercel.app/api/top-langs/?username=MarianelaPurretta&theme=onedark&hide_border=false&include_all_commits=false&count_private=true&layout=compact)
 
-  ![MarianelaPurretta GitHub stats](https://github-readme-stats.vercel.app/api?username=MarianelaPurretta&show_icons=true&theme=onedark)
-
-  [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=MarianelaPurretta&layout=donut-vertical)](https://github.com/anuraghazra/github-readme-stats)
+### 🔝 Top Contributed Repo
+![](https://github-contributor-stats.vercel.app/api?username=MarianelaPurretta&limit=5&theme=onedark&combine_all_yearly_contributions=true)
 
 ---
+[![](https://visitcount.itsvg.in/api?id=MarianelaPurretta&icon=6&color=4)](https://visitcount.itsvg.in)
+
+<!-- Proudly created with GPRM ( https://gprm.itsvg.in ) -->
+
 
 
 ## 🏆 GitHub Trophies
