@@ -21,7 +21,7 @@
          <img src = "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNmljbW9yZHUxb3ptZm85YnlnOWowMGEwcWhicnZubTl5bjYyYjE0cSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/du3J3cXyzhj75IOgvA/giphy.gif" title"GitHub" alt="GitHub"width="50" height="50"/>&nbsp; 
          <img src = "https://cdn.dribbble.com/users/392441/screenshots/2592452/media/96909bc51fcaba2a26838a6670d809b0.gif" title"PS" alt="PS" width="70" height="50"/>&nbsp;
          <img src = "https://logowik.com/content/uploads/images/adobe-lightroom-classic-cc8442.jpg" title"Lr" alt="Lr"width="60" height="50"/>&nbsp; 
-         <img src = "https://media.tenor.com/sgynagBNtGUAAAAC/premiere-pro.gif" title"Pr" alt="Pr" width="50" height="50"/>&nbsp;
+         <img src = "https://github.com/oscarvalenzuela25/oscarvalenzuela25/blob/main/html.gif?raw=true" title"Pr" alt="Pr" width="60" height="60"/>&nbsp;
     </div>
 </div> 
 
