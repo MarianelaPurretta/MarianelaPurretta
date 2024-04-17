@@ -34,14 +34,18 @@
 ![](https://github-readme-streak-stats.herokuapp.com/?user=MarianelaPurretta&theme=onedark&hide_border=false)<br/>
 ![](https://github-readme-stats.vercel.app/api/top-langs/?username=MarianelaPurretta&theme=onedark&hide_border=false&include_all_commits=false&count_private=true&layout=compact)
 
+
 ### 🔝 Top Contributed Repo
 ![](https://github-contributor-stats.vercel.app/api?username=MarianelaPurretta&limit=5&theme=onedark&combine_all_yearly_contributions=true)
 
 ---
-[![](https://visitcount.itsvg.in/api?id=MarianelaPurretta&icon=6&color=4)](https://visitcount.itsvg.in)
 
-<!-- Proudly created with GPRM ( https://gprm.itsvg.in ) -->
-
+<a href="https://next.ossinsight.io/widgets/official/compose-user-dashboard-stats?user_id=135768183" target="_blank" style="display: block" align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://next.ossinsight.io/widgets/official/compose-user-dashboard-stats/thumbnail.png?user_id=135768183&image_size=auto&color_scheme=dark" width="771" height="auto">
+    <img alt="Dashboard stats of @MarianelaPurretta" src="https://next.ossinsight.io/widgets/official/compose-user-dashboard-stats/thumbnail.png?user_id=135768183&image_size=auto&color_scheme=light" width="771" height="auto">
+  </picture>
+</a>
 
 
 ## 🏆 GitHub Trophies
@@ -49,6 +53,4 @@
 
 ---
 
-
-<!-- Proudly created with GPRM ( https://gprm.itsvg.in ) -->
-    
+[![](https://visitcount.itsvg.in/api?id=MarianelaPurretta&icon=6&color=4)](https://visitcount.itsvg.in)
