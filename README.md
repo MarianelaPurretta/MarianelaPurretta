@@ -4,7 +4,11 @@
     <img src ="https://media.giphy.com/media/MMnzoF2qdznMWzWE86/giphy-downsized-large.gif" width="100"/>
     <h1 align="center">Hola! Soy Marianela</h1>
     <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWI2dG9qODl0ejF4ZTJxeDV4YjB3Nm0zZG1hZmxhNWxiMnh4ZGE2NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CuuSHzuc0O166MRfjt/giphy.gif" width="250" />
-    <h3 align="center">👋 Apasionada estudiante de programación 🚀| Fotógrafa, videógrafa y editora profesional 📸🎥| En constante búsqueda de conocimiento y excelencia 🌟| Lista para colaborar en proyectos innovadores y desafiantes 💼| Uniendo la creatividad visual con la mentalidad técnica y creativa| 
+    <h3 align="center">👋 Técnica Universitaria en Programación 🚀
+        | Desarrolladora Front-End | Fotógrafa, videógrafa y editora profesional 📸🎥
+        | En constante búsqueda de conocimiento y excelencia 🌟
+        | Lista para colaborar en proyectos innovadores y desafiantes 💼
+        | Uniendo la creatividad visual con la mentalidad técnica y creativa| 
 </h3>
 </div>
 
@@ -24,8 +28,12 @@
          <img src = "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHlocndlMTF3d2NoeTJoaXZzcWx2cXprdnJtMmVwNzcwdTNpd2JrbCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/fsEaZldNC8A1PJ3mwp/giphy.webp" title"CSS" alt="css" width="60" height="60"/>&nbsp;
          <img src = "https://media1.tenor.com/m/z3Vqx6hmE5QAAAAC/whale-docker.gif" title"Docker" alt="DK" width="50" height="50"/>&nbsp;
          <img src = "https://miro.medium.com/v2/resize:fit:500/format:webp/1*rAj9qt_OnWXCAlbJyUrhlw.gif" title"Postgresql" alt="Psql" width="60" height="60"/>&nbsp;
-         <img src = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaXBienZ0am4yM3Q1cjAzbGtuZXA3bXA0MmhtYjAwNWVyejh2bmEwZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/tAjb5pyCEBhEb8jWxC/giphy.webp" title"MongoDB" alt="MDB" width="60" height="60"/>&nbsp;   
-    </div>
+         <img src = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExaXBienZ0am4yM3Q1cjAzbGtuZXA3bXA0MmhtYjAwNWVyejh2bmEwZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/tAjb5pyCEBhEb8jWxC/giphy.webp" title"MongoDB" alt="MDB" width="60" height="60"/>&nbsp;
+         <img src = "https://user-images.githubusercontent.com/1560278/27637937-cb4b9b24-5c11-11e7-949b-15c1e4cdb53c.gif" title"Angular" alt="Angular" width="50" height="50"/>&nbsp;
+         <img src = "https://i.makeagif.com/media/11-21-2022/imisbt.gif" title"React" alt="React" width="50" height="50"/>&nbsp;
+
+
+    
 </div> 
 
 ---
