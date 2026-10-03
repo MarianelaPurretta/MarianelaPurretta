@@ -421,6 +421,7 @@ jobs:
           print("Generated: profile/bitacora.svg")
           PY
 
+
       # =======================================================
       # CARD 5
       # LOGROS DE GITHUB
@@ -618,8 +619,9 @@ jobs:
           print("Generated: profile/trophies.svg")
           PY
 
+
       # =======================================================
-      # CARD
+      # CARD 6
       # HEATMAP DE CONTRIBUCIONES - ÚLTIMOS 18 MESES
       # =======================================================
 
@@ -628,24 +630,49 @@ jobs:
           STATS_PAT: ${{ secrets.STATS_PAT }}
           USERNAME: ${{ github.repository_owner }}
         run: |
-          FROM_DATE=$(date -u -d "18 months ago" +"%Y-%m-%dT00:00:00Z")
-          TO_DATE=$(date -u +"%Y-%m-%dT23:59:59Z")
-
-          export FROM_DATE
-          export TO_DATE
           export USERNAME
           export STATS_PAT
 
           python3 <<'PY'
           import json
           import os
-          import math
           import urllib.request
+          from datetime import datetime, timezone, timedelta
 
           username = os.environ["USERNAME"]
           token = os.environ["STATS_PAT"].strip()
-          from_date = os.environ["FROM_DATE"]
-          to_date = os.environ["TO_DATE"]
+
+          now = datetime.now(timezone.utc)
+
+          # ===================================================
+          # CALCULAR 18 MESES SIN DEPENDENCIAS EXTERNAS
+          # ===================================================
+
+          def subtract_months(dt, months):
+              year = dt.year
+              month = dt.month - months
+
+              while month <= 0:
+                  month += 12
+                  year -= 1
+
+              return dt.replace(
+                  year=year,
+                  month=month,
+                  day=1
+              )
+
+          period_start = subtract_months(now, 18)
+
+          # Dividir en dos consultas:
+          # primeros 12 meses + últimos 6 meses
+          period_split = subtract_months(now, 6)
+
+          def iso_start(dt):
+              return dt.strftime("%Y-%m-%dT00:00:00Z")
+
+          def iso_end(dt):
+              return dt.strftime("%Y-%m-%dT23:59:59Z")
 
           query = """
           query($login: String!, $from: DateTime!, $to: DateTime!) {
@@ -661,214 +688,380 @@ jobs:
                     }
                     firstDay
                   }
-                  months {
-                    name
-                    year
-                    firstDay
-                    totalWeeks
-                  }
                 }
               }
             }
           }
           """
 
-          payload = json.dumps({
-              "query": query,
-              "variables": {
-                  "login": username,
-                  "from": from_date,
-                  "to": to_date
-              }
-          }).encode("utf-8")
+          def get_calendar(from_date, to_date):
+              payload = json.dumps({
+                  "query": query,
+                  "variables": {
+                      "login": username,
+                      "from": from_date,
+                      "to": to_date
+                  }
+              }).encode("utf-8")
 
-          request = urllib.request.Request(
-              "https://api.github.com/graphql",
-              data=payload,
-              headers={
-                  "Authorization": f"Bearer {token}",
-                  "Content-Type": "application/json",
-                  "User-Agent": "github-profile-stats"
-              }
+              request = urllib.request.Request(
+                  "https://api.github.com/graphql",
+                  data=payload,
+                  headers={
+                      "Authorization": f"Bearer {token}",
+                      "Content-Type": "application/json",
+                      "User-Agent": "github-profile-stats"
+                  }
+              )
+
+              with urllib.request.urlopen(request) as response:
+                  result = json.load(response)
+
+              if "errors" in result:
+                  raise RuntimeError(result["errors"])
+
+              return result["data"]["user"]["contributionsCollection"]["contributionCalendar"]
+
+          calendar_1 = get_calendar(
+              iso_start(period_start),
+              iso_end(period_split - timedelta(seconds=1))
           )
 
-          with urllib.request.urlopen(request) as response:
-              result = json.load(response)
+          calendar_2 = get_calendar(
+              iso_start(period_split),
+              iso_end(now)
+          )
 
-          if "errors" in result:
-              raise RuntimeError(result["errors"])
+          # ===================================================
+          # UNIFICAR DÍAS
+          # ===================================================
 
-          calendar = result["data"]["user"]["contributionsCollection"]["contributionCalendar"]
-          weeks = calendar["weeks"]
-          months = calendar["months"]
-          total = calendar["totalContributions"]
+          days_by_date = {}
 
-          os.makedirs("profile", exist_ok=True)
+          for calendar in (calendar_1, calendar_2):
+              for week in calendar["weeks"]:
+                  for day in week["contributionDays"]:
+                      days_by_date[day["date"]] = {
+                          "date": day["date"],
+                          "weekday": day["weekday"],
+                          "count": day["contributionCount"]
+                      }
 
-          # ==========
-          # LAYOUT
-          # ==========
-          card_width = 980
-          card_height = 250
-          padding_x = 28
-          padding_top = 26
-          padding_bottom = 24
+          days = sorted(
+              days_by_date.values(),
+              key=lambda d: d["date"]
+          )
 
-          title_y = 40
-          subtitle_y = 62
+          total = sum(day["count"] for day in days)
 
-          grid_x = 95
-          grid_y = 95
-          cell = 11
-          gap = 4
+          print(f"Days obtained: {len(days)}")
+          print(f"Total contributions: {total}")
 
-          rows = 7
-          cols = len(weeks)
+          # ===================================================
+          # AGRUPAR POR SEMANA
+          # ===================================================
 
-          grid_width = cols * cell + max(0, cols - 1) * gap
-          grid_height = rows * cell + max(0, rows - 1) * gap
+          weeks = []
+          current_week = []
 
-          # ==========
-          # ESCALA B/N
-          # ==========
-          max_count = 0
-          for w in weeks:
-              for d in w["contributionDays"]:
-                  max_count = max(max_count, d["contributionCount"])
+          for day in days:
+              if day["weekday"] == 0 and current_week:
+                  weeks.append(current_week)
+                  current_week = []
+
+              current_week.append(day)
+
+          if current_week:
+              weeks.append(current_week)
+
+          max_count = max(
+              (day["count"] for day in days),
+              default=0
+          )
+
+          # ===================================================
+          # ESCALA BLANCO / NEGRO / GRIS
+          # ===================================================
 
           def level_color(count):
               if count == 0:
                   return "#111111"
+
               if max_count <= 1:
                   return "#FFFFFF"
+
               ratio = count / max_count
-              if ratio <= 0.25:
-                  return "#3A3A3A"
-              if ratio <= 0.50:
-                  return "#6A6A6A"
-              if ratio <= 0.75:
-                  return "#9A9A9A"
+
+              if ratio <= 0.20:
+                  return "#333333"
+
+              if ratio <= 0.40:
+                  return "#555555"
+
+              if ratio <= 0.60:
+                  return "#808080"
+
+              if ratio <= 0.80:
+                  return "#B5B5B5"
+
               return "#FFFFFF"
 
-          month_positions = []
-          for m in months:
-              first_day = m["firstDay"]
-              idx = None
-              for i, w in enumerate(weeks):
-                  if w["firstDay"] <= first_day:
-                      idx = i
-              if idx is None:
-                  idx = 0
-              month_positions.append((m["name"], idx))
+          # ===================================================
+          # CONFIGURACIÓN
+          # ===================================================
 
-          month_names_es = {
-              "January": "Ene",
-              "February": "Feb",
-              "March": "Mar",
-              "April": "Abr",
-              "May": "May",
-              "June": "Jun",
-              "July": "Jul",
-              "August": "Ago",
-              "September": "Sep",
-              "October": "Oct",
-              "November": "Nov",
-              "December": "Dic",
+          card_width = 1180
+          card_height = 260
+
+          grid_x = 90
+          grid_y = 95
+
+          cell = 10
+          gap = 3
+
+          week_step = cell + gap
+          row_step = cell + gap
+
+          grid_height = 7 * cell + 6 * gap
+
+          # ===================================================
+          # MESES
+          # ===================================================
+
+          month_names = {
+              1: "Ene",
+              2: "Feb",
+              3: "Mar",
+              4: "Abr",
+              5: "May",
+              6: "Jun",
+              7: "Jul",
+              8: "Ago",
+              9: "Sep",
+              10: "Oct",
+              11: "Nov",
+              12: "Dic"
           }
 
-          # Etiquetas izquierda
-          left_labels = [
-              ("Lun", 1),
-              ("Mié", 3),
-              ("Vie", 5),
-          ]
+          month_labels = []
+          last_month = None
 
-          def esc(txt):
-              return (
-                  str(txt)
-                  .replace("&", "&amp;")
-                  .replace("<", "&lt;")
-                  .replace(">", "&gt;")
+          for week_index, week in enumerate(weeks):
+              if not week:
+                  continue
+
+              first_date = datetime.strptime(
+                  week[0]["date"],
+                  "%Y-%m-%d"
               )
+
+              month_key = (
+                  first_date.year,
+                  first_date.month
+              )
+
+              if month_key != last_month:
+                  month_labels.append({
+                      "label": month_names[first_date.month],
+                      "year": first_date.year,
+                      "week": week_index
+                  })
+
+                  last_month = month_key
+
+          # ===================================================
+          # GENERAR SVG
+          # ===================================================
 
           svg = []
 
-          svg.append(f'''<svg width="{card_width}" height="{card_height}" viewBox="0 0 {card_width} {card_height}" xmlns="http://www.w3.org/2000/svg">''')
-          svg.append(f'''
-            <rect x="0.5" y="0.5" width="{card_width-1}" height="{card_height-1}" rx="0" fill="#000000" stroke="#FFFFFF"/>
-          ''')
+          svg.append(
+              f'<svg width="{card_width}" '
+              f'height="{card_height}" '
+              f'viewBox="0 0 {card_width} {card_height}" '
+              f'xmlns="http://www.w3.org/2000/svg">'
+          )
 
-          svg.append(f'''
-            <text x="{card_width/2}" y="{title_y}" text-anchor="middle"
-              fill="#FFFFFF" font-family="Arial, sans-serif" font-size="22" font-weight="700">
-              Actividad de contribuciones
-            </text>
-          ''')
+          svg.append(
+              f'<rect x="0.5" y="0.5" '
+              f'width="{card_width - 1}" '
+              f'height="{card_height - 1}" '
+              f'rx="0" '
+              f'fill="#000000" '
+              f'stroke="#808080"/>'
+          )
 
-          svg.append(f'''
-            <text x="{card_width/2}" y="{subtitle_y}" text-anchor="middle"
-              fill="#AFAFAF" font-family="Arial, sans-serif" font-size="12">
-              Últimos 18 meses · {total} contribuciones
-            </text>
-          ''')
+          svg.append(
+              '<text '
+              'x="590" '
+              'y="38" '
+              'text-anchor="middle" '
+              'fill="#FFFFFF" '
+              'font-family="Arial, sans-serif" '
+              'font-size="22" '
+              'font-weight="700">'
+              'Actividad en GitHub'
+              '</text>'
+          )
 
-          # Meses
-          for name, idx in month_positions:
-              x = grid_x + idx * (cell + gap)
-              label = month_names_es.get(name, name[:3])
-              svg.append(f'''
-                <text x="{x}" y="{grid_y - 14}" fill="#BDBDBD"
-                  font-family="Arial, sans-serif" font-size="11">{esc(label)}</text>
-              ''')
+          svg.append(
+              f'<text '
+              f'x="590" '
+              f'y="61" '
+              f'text-anchor="middle" '
+              f'fill="#AFAFAF" '
+              f'font-family="Arial, sans-serif" '
+              f'font-size="12">'
+              f'Últimos 18 meses · {total} contribuciones'
+              f'</text>'
+          )
 
-          # Días laterales
-          for label, row_idx in left_labels:
-              y = grid_y + row_idx * (cell + gap) + 9
-              svg.append(f'''
-                <text x="{grid_x - 28}" y="{y}" text-anchor="end"
-                  fill="#BDBDBD" font-family="Arial, sans-serif" font-size="11">{label}</text>
-              ''')
+          # ===================================================
+          # ETIQUETAS DE MESES
+          # ===================================================
 
-          # Celdas
-          for col_idx, week in enumerate(weeks):
-              for day in week["contributionDays"]:
-                  row_idx = day["weekday"]
-                  x = grid_x + col_idx * (cell + gap)
-                  y = grid_y + row_idx * (cell + gap)
-                  color = level_color(day["contributionCount"])
-                  svg.append(f'''
-                    <rect x="{x}" y="{y}" width="{cell}" height="{cell}" rx="0"
-                      fill="{color}" stroke="#1A1A1A">
-                      <title>{day["date"]}: {day["contributionCount']} contribuciones</title>
-                    </rect>
-                  ''')
+          previous_year = None
 
-          # Leyenda
-          legend_x = card_width - 205
-          legend_y = grid_y + grid_height + 26
+          for item in month_labels:
+              x = grid_x + item["week"] * week_step
 
-          svg.append(f'''
-            <text x="{legend_x}" y="{legend_y + 9}" fill="#BDBDBD"
-              font-family="Arial, sans-serif" font-size="11">Menos</text>
-          ''')
+              label = item["label"]
 
-          legend_colors = ["#111111", "#3A3A3A", "#6A6A6A", "#9A9A9A", "#FFFFFF"]
-          for i, c in enumerate(legend_colors):
-              x = legend_x + 45 + i * 16
-              svg.append(f'''
-                <rect x="{x}" y="{legend_y}" width="11" height="11" rx="0" fill="{c}" stroke="#1A1A1A"/>
-              ''')
+              if previous_year != item["year"]:
+                  label = f'{label} {item["year"]}'
+                  previous_year = item["year"]
 
-          svg.append(f'''
-            <text x="{legend_x + 45 + len(legend_colors)*16 + 8}" y="{legend_y + 9}" fill="#BDBDBD"
-              font-family="Arial, sans-serif" font-size="11">Más</text>
-          ''')
+              svg.append(
+                  f'<text '
+                  f'x="{x}" '
+                  f'y="{grid_y - 14}" '
+                  f'fill="#BDBDBD" '
+                  f'font-family="Arial, sans-serif" '
+                  f'font-size="10">'
+                  f'{label}'
+                  f'</text>'
+              )
 
-          svg.append('</svg>')
+          # ===================================================
+          # ETIQUETAS DE DÍAS
+          # ===================================================
+
+          day_labels = [
+              ("Lun", 1),
+              ("Mié", 3),
+              ("Vie", 5)
+          ]
+
+          for label, row in day_labels:
+              y = grid_y + row * row_step + 9
+
+              svg.append(
+                  f'<text '
+                  f'x="{grid_x - 18}" '
+                  f'y="{y}" '
+                  f'text-anchor="end" '
+                  f'fill="#888888" '
+                  f'font-family="Arial, sans-serif" '
+                  f'font-size="10">'
+                  f'{label}'
+                  f'</text>'
+              )
+
+          # ===================================================
+          # CELDAS
+          # ===================================================
+
+          for week_index, week in enumerate(weeks):
+              for day in week:
+                  x = grid_x + week_index * week_step
+                  y = grid_y + day["weekday"] * row_step
+
+                  color = level_color(day["count"])
+
+                  date_text = day["date"]
+                  count_text = day["count"]
+
+                  svg.append(
+                      f'<rect '
+                      f'x="{x}" '
+                      f'y="{y}" '
+                      f'width="{cell}" '
+                      f'height="{cell}" '
+                      f'rx="0" '
+                      f'fill="{color}" '
+                      f'stroke="#1A1A1A">'
+                      f'<title>{date_text}: '
+                      f'{count_text} contribuciones</title>'
+                      f'</rect>'
+                  )
+
+          # ===================================================
+          # LEYENDA
+          # ===================================================
+
+          legend_y = grid_y + grid_height + 36
+          legend_x = card_width - 245
+
+          svg.append(
+              f'<text '
+              f'x="{legend_x}" '
+              f'y="{legend_y + 9}" '
+              f'fill="#888888" '
+              f'font-family="Arial, sans-serif" '
+              f'font-size="10">'
+              f'Menos'
+              f'</text>'
+          )
+
+          colors = [
+              "#111111",
+              "#333333",
+              "#555555",
+              "#808080",
+              "#B5B5B5",
+              "#FFFFFF"
+          ]
+
+          for index, color in enumerate(colors):
+              x = legend_x + 42 + index * 16
+
+              svg.append(
+                  f'<rect '
+                  f'x="{x}" '
+                  f'y="{legend_y}" '
+                  f'width="10" '
+                  f'height="10" '
+                  f'rx="0" '
+                  f'fill="{color}" '
+                  f'stroke="#222222"/>'
+              )
+
+          svg.append(
+              f'<text '
+              f'x="{legend_x + 150}" '
+              f'y="{legend_y + 9}" '
+              f'fill="#888888" '
+              f'font-family="Arial, sans-serif" '
+              f'font-size="10">'
+              f'Más'
+              f'</text>'
+          )
+
+          svg.append("</svg>")
+
+          os.makedirs(
+              "profile",
+              exist_ok=True
+          )
 
           output = "profile/contribution-18-months.svg"
-          with open(output, "w", encoding="utf-8") as f:
-              f.write("\n".join(svg))
+
+          with open(
+              output,
+              "w",
+              encoding="utf-8"
+          ) as file:
+              file.write("\n".join(svg))
 
           print(f"Generated: {output}")
           print(f"Total contributions: {total}")
@@ -892,7 +1085,7 @@ jobs:
           test -f profile/trophies.svg
           test -f profile/contribution-18-months.svg
 
-          echo "All 4 cards generated successfully."
+          echo "All cards generated successfully."
 
 
       # =======================================================
@@ -909,6 +1102,7 @@ jobs:
           git add profile/stats.svg
           git add profile/stack.svg
           git add profile/bitacora.svg
+          git add profile/trophies.svg
           git add profile/contribution-18-months.svg
 
           if git diff --cached --quiet; then
