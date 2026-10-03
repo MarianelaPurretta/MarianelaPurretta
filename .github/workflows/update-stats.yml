@@ -1,82 +1,18 @@
-name: Update GitHub Stats
-
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 3 * * *"
-
-permissions:
-  contents: write
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-
-      # =======================================================
-      # CHECKOUT
-      # =======================================================
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-
-      # =======================================================
-      # VALIDAR TOKEN
-      # =======================================================
-
-      - name: Check PAT rate limit
-        env:
-          STATS_PAT: ${{ secrets.STATS_PAT }}
-        run: |
-          echo "GitHub API rate limit:"
-
-          curl -s \
-            -H "Authorization: Bearer $STATS_PAT" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/rate_limit \
-            | jq '.rate | {limit, remaining, reset}'
-
-
-      # =======================================================
-      # VALIDAR ACCESO A BITACORA
-      # =======================================================
-
-      - name: Check Bitacora access
-        env:
-          STATS_PAT: ${{ secrets.STATS_PAT }}
-        run: |
-          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-            -H "Authorization: Bearer $STATS_PAT" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/MarianelaPurretta/Bitacora)
-
-          echo "Bitacora API status: $STATUS"
-
-          if [ "$STATUS" != "200" ]; then
-            echo "PAT cannot access Bitacora"
-            exit 1
-          fi
-
-
-      # =======================================================
-      # CARD 1
-      # ACTIVIDAD ÚLTIMOS 12 MESES
-      # =======================================================
-
       - name: Generate last 12 months card
         env:
-          GH_TOKEN: ${{ secrets.STATS_PAT }}
+          STATS_PAT: ${{ secrets.STATS_PAT }}
           USERNAME: ${{ github.repository_owner }}
         run: |
           FROM_DATE=$(date -u -d "365 days ago" +"%Y-%m-%dT00:00:00Z")
           TO_DATE=$(date -u +"%Y-%m-%dT23:59:59Z")
 
+          # Limpiar posibles saltos de línea/caracteres CR del secret
+          CLEAN_TOKEN=$(printf '%s' "$STATS_PAT" | tr -d '\r\n')
+
           echo "From: $FROM_DATE"
           echo "To:   $TO_DATE"
 
-          gh api graphql \
+          GH_TOKEN="$CLEAN_TOKEN" gh api graphql \
             -f query='
               query($login: String!, $from: DateTime!, $to: DateTime!) {
                 user(login: $login) {
@@ -93,7 +29,7 @@ jobs:
             > contribution-data.json
 
           echo "GitHub response:"
-          cat contribution-data.json | jq .
+          jq . contribution-data.json
 
           COMMITS=$(jq -r \
             '.data.user.contributionsCollection.totalCommitContributions' \
@@ -217,83 +153,12 @@ jobs:
 
           </svg>'''
 
-          with open(
-              "profile/last-12-months.svg",
-              "w",
-              encoding="utf-8"
-          ) as file:
+          output = "profile/last-12-months.svg"
+
+          with open(output, "w", encoding="utf-8") as file:
               file.write(svg)
 
-          print("Generated: profile/last-12-months.svg")
+          print(f"Generated: {output}")
           print(f"Commits: {commits}")
           print(f"Pull Requests: {prs}")
           PY
-
-
-      # =======================================================
-      # CARD 2
-      # ESTADÍSTICAS GENERALES
-      # =======================================================
-
-      - name: Generate stats card
-        uses: stats-organization/github-readme-stats-action@v2
-        with:
-          card: stats
-          options: username=${{ github.repository_owner }}&show_icons=true&include_all_commits=true&count_private=true&number_format=long&card_width=495&bg_color=000000&title_color=FFA500&text_color=FFFFFF&icon_color=FFA500&border_color=FFFFFF&locale=es
-          path: profile/stats.svg
-          token: ${{ secrets.STATS_PAT }}
-          fail_on_error: true
-
-
-      # =======================================================
-      # CARD 3
-      # LENGUAJES MÁS UTILIZADOS
-      # =======================================================
-
-      - name: Generate top languages card
-        uses: stats-organization/github-readme-stats-action@v2
-        with:
-          card: top-langs
-          options: username=${{ github.repository_owner }}&layout=compact&langs_count=6&card_width=495&bg_color=000000&title_color=FFA500&text_color=FFFFFF&border_color=FFFFFF&locale=es
-          path: profile/top-langs.svg
-          token: ${{ secrets.STATS_PAT }}
-          fail_on_error: true
-
-
-      # =======================================================
-      # VERIFICAR CARDS
-      # =======================================================
-
-      - name: Verify generated cards
-        run: |
-          echo "Generated cards:"
-          ls -lah profile/
-
-          test -f profile/last-12-months.svg
-          test -f profile/stats.svg
-          test -f profile/top-langs.svg
-
-          echo "All 3 cards generated successfully."
-
-
-      # =======================================================
-      # COMMIT AUTOMÁTICO
-      # =======================================================
-
-      - name: Commit updated cards
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email \
-            "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add profile/last-12-months.svg
-          git add profile/stats.svg
-          git add profile/top-langs.svg
-
-          if git diff --cached --quiet; then
-            echo "No changes to commit."
-            exit 0
-          fi
-
-          git commit -m "Update GitHub stats"
-          git push
