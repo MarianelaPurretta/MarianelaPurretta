@@ -330,7 +330,8 @@ jobs:
           print("Generated: profile/stack.svg")
           PY
 
-            # =======================================================
+
+      # =======================================================
       # CARD 4
       # REPOSITORIO DESTACADO - BITACORA
       # =======================================================
@@ -419,6 +420,8 @@ jobs:
 
           print("Generated: profile/bitacora.svg")
           PY
+
+
       # =======================================================
       # VERIFICAR CARDS
       # =======================================================
@@ -431,8 +434,9 @@ jobs:
           test -f profile/last-12-months.svg
           test -f profile/stats.svg
           test -f profile/stack.svg
+          test -f profile/bitacora.svg
 
-          echo "All 3 cards generated successfully."
+          echo "All 4 cards generated successfully."
 
 
       # =======================================================
@@ -448,6 +452,7 @@ jobs:
           git add profile/last-12-months.svg
           git add profile/stats.svg
           git add profile/stack.svg
+          git add profile/bitacora.svg
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
