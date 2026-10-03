@@ -35,7 +35,6 @@ jobs:
           curl -s \
             -H "Authorization: Bearer $STATS_PAT" \
             -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/rate_limit \
             | jq '.rate | {limit, remaining, reset}'
 
@@ -51,7 +50,6 @@ jobs:
           STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
             -H "Authorization: Bearer $STATS_PAT" \
             -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
             https://api.github.com/repos/MarianelaPurretta/Bitacora)
 
           echo "Bitacora API status: $STATUS"
@@ -65,12 +63,11 @@ jobs:
       # =======================================================
       # CARD 1
       # ACTIVIDAD ÚLTIMOS 12 MESES
-      # COMMITS + PULL REQUESTS
       # =======================================================
 
       - name: Generate last 12 months card
         env:
-          STATS_PAT: ${{ secrets.STATS_PAT }}
+          GH_TOKEN: ${{ secrets.STATS_PAT }}
           USERNAME: ${{ github.repository_owner }}
         run: |
           FROM_DATE=$(date -u -d "365 days ago" +"%Y-%m-%dT00:00:00Z")
@@ -79,56 +76,40 @@ jobs:
           echo "From: $FROM_DATE"
           echo "To:   $TO_DATE"
 
-          QUERY='
-          query($login: String!, $from: DateTime!, $to: DateTime!) {
-            user(login: $login) {
-              contributionsCollection(from: $from, to: $to) {
-                totalCommitContributions
-                totalPullRequestContributions
+          gh api graphql \
+            -f query='
+              query($login: String!, $from: DateTime!, $to: DateTime!) {
+                user(login: $login) {
+                  contributionsCollection(from: $from, to: $to) {
+                    totalCommitContributions
+                    totalPullRequestContributions
+                  }
+                }
               }
-            }
-          }'
+            ' \
+            -F login="$USERNAME" \
+            -F from="$FROM_DATE" \
+            -F to="$TO_DATE" \
+            > contribution-data.json
 
-          PAYLOAD=$(jq -n \
-            --arg query "$QUERY" \
-            --arg login "$USERNAME" \
-            --arg from "$FROM_DATE" \
-            --arg to "$TO_DATE" \
-            '{
-              query: $query,
-              variables: {
-                login: $login,
-                from: $from,
-                to: $to
-              }
-            }')
+          echo "GitHub response:"
+          cat contribution-data.json | jq .
 
-          RESPONSE=$(curl -s \
-            -X POST \
-            -H "Authorization: Bearer $STATS_PAT" \
-            -H "Content-Type: application/json" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/graphql \
-            -d "$PAYLOAD")
+          COMMITS=$(jq -r \
+            '.data.user.contributionsCollection.totalCommitContributions' \
+            contribution-data.json)
 
-          echo "$RESPONSE" | jq .
+          PRS=$(jq -r \
+            '.data.user.contributionsCollection.totalPullRequestContributions' \
+            contribution-data.json)
 
-          ERRORS=$(echo "$RESPONSE" | jq -r '.errors // empty')
-
-          if [ -n "$ERRORS" ]; then
-            echo "GraphQL returned errors:"
-            echo "$RESPONSE" | jq '.errors'
+          if [ "$COMMITS" = "null" ] || [ -z "$COMMITS" ]; then
+            echo "Could not obtain commit statistics."
             exit 1
           fi
 
-          COMMITS=$(echo "$RESPONSE" | jq -r \
-            '.data.user.contributionsCollection.totalCommitContributions')
-
-          PRS=$(echo "$RESPONSE" | jq -r \
-            '.data.user.contributionsCollection.totalPullRequestContributions')
-
-          if [ "$COMMITS" = "null" ] || [ "$PRS" = "null" ]; then
-            echo "Could not obtain contribution statistics."
+          if [ "$PRS" = "null" ] || [ -z "$PRS" ]; then
+            echo "Could not obtain Pull Request statistics."
             exit 1
           fi
 
@@ -146,9 +127,7 @@ jobs:
           commits = os.environ["COMMITS"]
           prs = os.environ["PRS"]
 
-          svg = f'''<svg
-            width="495"
-            height="195"
+          svg = f'''<svg width="495" height="195"
             viewBox="0 0 495 195"
             xmlns="http://www.w3.org/2000/svg">
 
@@ -238,12 +217,14 @@ jobs:
 
           </svg>'''
 
-          output = "profile/last-12-months.svg"
-
-          with open(output, "w", encoding="utf-8") as file:
+          with open(
+              "profile/last-12-months.svg",
+              "w",
+              encoding="utf-8"
+          ) as file:
               file.write(svg)
 
-          print(f"Generated: {output}")
+          print("Generated: profile/last-12-months.svg")
           print(f"Commits: {commits}")
           print(f"Pull Requests: {prs}")
           PY
@@ -280,19 +261,19 @@ jobs:
 
 
       # =======================================================
-      # VERIFICAR LAS 3 CARDS
+      # VERIFICAR CARDS
       # =======================================================
 
       - name: Verify generated cards
         run: |
-          echo "Files generated:"
+          echo "Generated cards:"
           ls -lah profile/
 
           test -f profile/last-12-months.svg
           test -f profile/stats.svg
           test -f profile/top-langs.svg
 
-          echo "All 3 cards were generated successfully."
+          echo "All 3 cards generated successfully."
 
 
       # =======================================================
@@ -302,7 +283,8 @@ jobs:
       - name: Commit updated cards
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add profile/last-12-months.svg
           git add profile/stats.svg
