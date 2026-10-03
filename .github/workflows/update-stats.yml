@@ -632,6 +632,7 @@ jobs:
           test -f profile/stats.svg
           test -f profile/stack.svg
           test -f profile/bitacora.svg
+          test -f profile/trophies.svg
 
           echo "All 4 cards generated successfully."
 
