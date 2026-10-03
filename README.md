@@ -1,15 +1,22 @@
 ---
 
-<div id="header" align= "center">
-    <img src ="https://media.giphy.com/media/MMnzoF2qdznMWzWE86/giphy-downsized-large.gif" width="100"/>
-    <h1 align="center">Hola! Soy Marianela</h1>
-    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWI2dG9qODl0ejF4ZTJxeDV4YjB3Nm0zZG1hZmxhNWxiMnh4ZGE2NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CuuSHzuc0O166MRfjt/giphy.gif" width="250" />
-    <h3 align="center">👋 Técnica Universitaria en Programación 🚀
-        | Desarrolladora Front-End | Fotógrafa, videógrafa y editora profesional 📸🎥
-        | En constante búsqueda de conocimiento y excelencia 🌟
-        | Lista para colaborar en proyectos innovadores y desafiantes 💼
-        | Uniendo la creatividad visual con la mentalidad técnica y creativa| 
-</h3>
+<div align="center">
+
+<img src ="https://media.giphy.com/media/MMnzoF2qdznMWzWE86/giphy-downsized-large.gif" width="100"/>
+
+# Hola, soy Marianela
+
+<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWI2dG9qODl0ejF4ZTJxeDV4YjB3Nm0zZG1hZmxhNWxiMnh4ZGE2NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CuuSHzuc0O166MRfjt/giphy.gif" width="250" />
+
+### Desarrolladora Full Stack | Desarrollo de Software Asistida por IA
+### Análisis Técnico-Funcional | Seguridad de Aplicaciones
+
+Soy Desarrolladora Full Stack con experiencia trabajando de punta a punta sobre aplicaciones empresariales, combinando análisis de requerimientos, desarrollo frontend y backend, APIs, bases de datos, debugging, testing, seguridad y documentación.
+
+Integro Inteligencia Artificial de forma transversal en mi flujo de trabajo para análisis de requerimientos, comprensión de codebases, debugging, análisis de causa raíz, diseño de soluciones, revisión de código, testing y documentación.
+
+Trabajo con foco en soluciones simples, seguras y verificables, validando siempre contra código real, APIs, bases de datos, logs y comportamiento del sistema.
+
 </div>
 
 ---
