@@ -618,6 +618,263 @@ jobs:
           print("Generated: profile/trophies.svg")
           PY
 
+      # =======================================================
+      # CARD
+      # HEATMAP DE CONTRIBUCIONES - ÚLTIMOS 18 MESES
+      # =======================================================
+
+      - name: Generate 18 months contribution graph
+        env:
+          STATS_PAT: ${{ secrets.STATS_PAT }}
+          USERNAME: ${{ github.repository_owner }}
+        run: |
+          FROM_DATE=$(date -u -d "18 months ago" +"%Y-%m-%dT00:00:00Z")
+          TO_DATE=$(date -u +"%Y-%m-%dT23:59:59Z")
+
+          export FROM_DATE
+          export TO_DATE
+          export USERNAME
+          export STATS_PAT
+
+          python3 <<'PY'
+          import json
+          import os
+          import math
+          import urllib.request
+
+          username = os.environ["USERNAME"]
+          token = os.environ["STATS_PAT"].strip()
+          from_date = os.environ["FROM_DATE"]
+          to_date = os.environ["TO_DATE"]
+
+          query = """
+          query($login: String!, $from: DateTime!, $to: DateTime!) {
+            user(login: $login) {
+              contributionsCollection(from: $from, to: $to) {
+                contributionCalendar {
+                  totalContributions
+                  weeks {
+                    contributionDays {
+                      contributionCount
+                      date
+                      weekday
+                    }
+                    firstDay
+                  }
+                  months {
+                    name
+                    year
+                    firstDay
+                    totalWeeks
+                  }
+                }
+              }
+            }
+          }
+          """
+
+          payload = json.dumps({
+              "query": query,
+              "variables": {
+                  "login": username,
+                  "from": from_date,
+                  "to": to_date
+              }
+          }).encode("utf-8")
+
+          request = urllib.request.Request(
+              "https://api.github.com/graphql",
+              data=payload,
+              headers={
+                  "Authorization": f"Bearer {token}",
+                  "Content-Type": "application/json",
+                  "User-Agent": "github-profile-stats"
+              }
+          )
+
+          with urllib.request.urlopen(request) as response:
+              result = json.load(response)
+
+          if "errors" in result:
+              raise RuntimeError(result["errors"])
+
+          calendar = result["data"]["user"]["contributionsCollection"]["contributionCalendar"]
+          weeks = calendar["weeks"]
+          months = calendar["months"]
+          total = calendar["totalContributions"]
+
+          os.makedirs("profile", exist_ok=True)
+
+          # ==========
+          # LAYOUT
+          # ==========
+          card_width = 980
+          card_height = 250
+          padding_x = 28
+          padding_top = 26
+          padding_bottom = 24
+
+          title_y = 40
+          subtitle_y = 62
+
+          grid_x = 95
+          grid_y = 95
+          cell = 11
+          gap = 4
+
+          rows = 7
+          cols = len(weeks)
+
+          grid_width = cols * cell + max(0, cols - 1) * gap
+          grid_height = rows * cell + max(0, rows - 1) * gap
+
+          # ==========
+          # ESCALA B/N
+          # ==========
+          max_count = 0
+          for w in weeks:
+              for d in w["contributionDays"]:
+                  max_count = max(max_count, d["contributionCount"])
+
+          def level_color(count):
+              if count == 0:
+                  return "#111111"
+              if max_count <= 1:
+                  return "#FFFFFF"
+              ratio = count / max_count
+              if ratio <= 0.25:
+                  return "#3A3A3A"
+              if ratio <= 0.50:
+                  return "#6A6A6A"
+              if ratio <= 0.75:
+                  return "#9A9A9A"
+              return "#FFFFFF"
+
+          month_positions = []
+          for m in months:
+              first_day = m["firstDay"]
+              idx = None
+              for i, w in enumerate(weeks):
+                  if w["firstDay"] <= first_day:
+                      idx = i
+              if idx is None:
+                  idx = 0
+              month_positions.append((m["name"], idx))
+
+          month_names_es = {
+              "January": "Ene",
+              "February": "Feb",
+              "March": "Mar",
+              "April": "Abr",
+              "May": "May",
+              "June": "Jun",
+              "July": "Jul",
+              "August": "Ago",
+              "September": "Sep",
+              "October": "Oct",
+              "November": "Nov",
+              "December": "Dic",
+          }
+
+          # Etiquetas izquierda
+          left_labels = [
+              ("Lun", 1),
+              ("Mié", 3),
+              ("Vie", 5),
+          ]
+
+          def esc(txt):
+              return (
+                  str(txt)
+                  .replace("&", "&amp;")
+                  .replace("<", "&lt;")
+                  .replace(">", "&gt;")
+              )
+
+          svg = []
+
+          svg.append(f'''<svg width="{card_width}" height="{card_height}" viewBox="0 0 {card_width} {card_height}" xmlns="http://www.w3.org/2000/svg">''')
+          svg.append(f'''
+            <rect x="0.5" y="0.5" width="{card_width-1}" height="{card_height-1}" rx="0" fill="#000000" stroke="#FFFFFF"/>
+          ''')
+
+          svg.append(f'''
+            <text x="{card_width/2}" y="{title_y}" text-anchor="middle"
+              fill="#FFFFFF" font-family="Arial, sans-serif" font-size="22" font-weight="700">
+              Actividad de contribuciones
+            </text>
+          ''')
+
+          svg.append(f'''
+            <text x="{card_width/2}" y="{subtitle_y}" text-anchor="middle"
+              fill="#AFAFAF" font-family="Arial, sans-serif" font-size="12">
+              Últimos 18 meses · {total} contribuciones
+            </text>
+          ''')
+
+          # Meses
+          for name, idx in month_positions:
+              x = grid_x + idx * (cell + gap)
+              label = month_names_es.get(name, name[:3])
+              svg.append(f'''
+                <text x="{x}" y="{grid_y - 14}" fill="#BDBDBD"
+                  font-family="Arial, sans-serif" font-size="11">{esc(label)}</text>
+              ''')
+
+          # Días laterales
+          for label, row_idx in left_labels:
+              y = grid_y + row_idx * (cell + gap) + 9
+              svg.append(f'''
+                <text x="{grid_x - 28}" y="{y}" text-anchor="end"
+                  fill="#BDBDBD" font-family="Arial, sans-serif" font-size="11">{label}</text>
+              ''')
+
+          # Celdas
+          for col_idx, week in enumerate(weeks):
+              for day in week["contributionDays"]:
+                  row_idx = day["weekday"]
+                  x = grid_x + col_idx * (cell + gap)
+                  y = grid_y + row_idx * (cell + gap)
+                  color = level_color(day["contributionCount"])
+                  svg.append(f'''
+                    <rect x="{x}" y="{y}" width="{cell}" height="{cell}" rx="0"
+                      fill="{color}" stroke="#1A1A1A">
+                      <title>{day["date"]}: {day["contributionCount']} contribuciones</title>
+                    </rect>
+                  ''')
+
+          # Leyenda
+          legend_x = card_width - 205
+          legend_y = grid_y + grid_height + 26
+
+          svg.append(f'''
+            <text x="{legend_x}" y="{legend_y + 9}" fill="#BDBDBD"
+              font-family="Arial, sans-serif" font-size="11">Menos</text>
+          ''')
+
+          legend_colors = ["#111111", "#3A3A3A", "#6A6A6A", "#9A9A9A", "#FFFFFF"]
+          for i, c in enumerate(legend_colors):
+              x = legend_x + 45 + i * 16
+              svg.append(f'''
+                <rect x="{x}" y="{legend_y}" width="11" height="11" rx="0" fill="{c}" stroke="#1A1A1A"/>
+              ''')
+
+          svg.append(f'''
+            <text x="{legend_x + 45 + len(legend_colors)*16 + 8}" y="{legend_y + 9}" fill="#BDBDBD"
+              font-family="Arial, sans-serif" font-size="11">Más</text>
+          ''')
+
+          svg.append('</svg>')
+
+          output = "profile/contribution-18-months.svg"
+          with open(output, "w", encoding="utf-8") as f:
+              f.write("\n".join(svg))
+
+          print(f"Generated: {output}")
+          print(f"Total contributions: {total}")
+          print(f"Weeks rendered: {len(weeks)}")
+          PY
+
 
       # =======================================================
       # VERIFICAR CARDS
@@ -633,6 +890,7 @@ jobs:
           test -f profile/stack.svg
           test -f profile/bitacora.svg
           test -f profile/trophies.svg
+          test -f profile/contribution-18-months.svg
 
           echo "All 4 cards generated successfully."
 
@@ -651,6 +909,7 @@ jobs:
           git add profile/stats.svg
           git add profile/stack.svg
           git add profile/bitacora.svg
+          git add profile/contribution-18-months.svg
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
