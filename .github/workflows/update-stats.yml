@@ -65,6 +65,7 @@ jobs:
       # =======================================================
       # CARD 1
       # ACTIVIDAD ÚLTIMOS 12 MESES
+      # COMMITS + PULL REQUESTS
       # =======================================================
 
       - name: Generate last 12 months card
@@ -72,23 +73,13 @@ jobs:
           STATS_PAT: ${{ secrets.STATS_PAT }}
           USERNAME: ${{ github.repository_owner }}
         run: |
-          FROM_DATE=$(date -u -d "12 months ago" +"%Y-%m-%dT00:00:00Z")
+          FROM_DATE=$(date -u -d "365 days ago" +"%Y-%m-%dT00:00:00Z")
           TO_DATE=$(date -u +"%Y-%m-%dT23:59:59Z")
 
-          export FROM_DATE
-          export TO_DATE
+          echo "From: $FROM_DATE"
+          echo "To:   $TO_DATE"
 
-          python3 <<'PY'
-          import json
-          import os
-          import urllib.request
-
-          username = os.environ["USERNAME"]
-          token = os.environ["STATS_PAT"]
-          from_date = os.environ["FROM_DATE"]
-          to_date = os.environ["TO_DATE"]
-
-          query = """
+          QUERY='
           query($login: String!, $from: DateTime!, $to: DateTime!) {
             user(login: $login) {
               contributionsCollection(from: $from, to: $to) {
@@ -96,40 +87,64 @@ jobs:
                 totalPullRequestContributions
               }
             }
-          }
-          """
+          }'
 
-          payload = json.dumps({
-              "query": query,
-              "variables": {
-                  "login": username,
-                  "from": from_date,
-                  "to": to_date
+          PAYLOAD=$(jq -n \
+            --arg query "$QUERY" \
+            --arg login "$USERNAME" \
+            --arg from "$FROM_DATE" \
+            --arg to "$TO_DATE" \
+            '{
+              query: $query,
+              variables: {
+                login: $login,
+                from: $from,
+                to: $to
               }
-          }).encode("utf-8")
+            }')
 
-          request = urllib.request.Request(
-              "https://api.github.com/graphql",
-              data=payload,
-              headers={
-                  "Authorization": f"Bearer {token}",
-                  "Content-Type": "application/json",
-                  "User-Agent": "github-profile-stats"
-              }
-          )
+          RESPONSE=$(curl -s \
+            -X POST \
+            -H "Authorization: Bearer $STATS_PAT" \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/graphql \
+            -d "$PAYLOAD")
 
-          with urllib.request.urlopen(request) as response:
-              result = json.load(response)
+          echo "$RESPONSE" | jq .
 
-          if "errors" in result:
-              raise RuntimeError(result["errors"])
+          ERRORS=$(echo "$RESPONSE" | jq -r '.errors // empty')
 
-          collection = result["data"]["user"]["contributionsCollection"]
+          if [ -n "$ERRORS" ]; then
+            echo "GraphQL returned errors:"
+            echo "$RESPONSE" | jq '.errors'
+            exit 1
+          fi
 
-          commits = collection["totalCommitContributions"]
-          prs = collection["totalPullRequestContributions"]
+          COMMITS=$(echo "$RESPONSE" | jq -r \
+            '.data.user.contributionsCollection.totalCommitContributions')
 
-          os.makedirs("profile", exist_ok=True)
+          PRS=$(echo "$RESPONSE" | jq -r \
+            '.data.user.contributionsCollection.totalPullRequestContributions')
+
+          if [ "$COMMITS" = "null" ] || [ "$PRS" = "null" ]; then
+            echo "Could not obtain contribution statistics."
+            exit 1
+          fi
+
+          echo "Commits last 12 months: $COMMITS"
+          echo "Pull Requests last 12 months: $PRS"
+
+          mkdir -p profile
+
+          export COMMITS
+          export PRS
+
+          python3 <<'PY'
+          import os
+
+          commits = os.environ["COMMITS"]
+          prs = os.environ["PRS"]
 
           svg = f'''<svg
             width="495"
@@ -237,7 +252,6 @@ jobs:
       # =======================================================
       # CARD 2
       # ESTADÍSTICAS GENERALES
-      # INCLUYE REPOS PRIVADOS ACCESIBLES POR EL PAT
       # =======================================================
 
       - name: Generate stats card
@@ -253,7 +267,6 @@ jobs:
       # =======================================================
       # CARD 3
       # LENGUAJES MÁS UTILIZADOS
-      # INCLUYE REPOS PRIVADOS ACCESIBLES POR EL PAT
       # =======================================================
 
       - name: Generate top languages card
@@ -267,19 +280,19 @@ jobs:
 
 
       # =======================================================
-      # VERIFICAR QUE LAS 3 CARDS EXISTAN
+      # VERIFICAR LAS 3 CARDS
       # =======================================================
 
       - name: Verify generated cards
         run: |
-          echo "Generated cards:"
+          echo "Files generated:"
           ls -lah profile/
 
           test -f profile/last-12-months.svg
           test -f profile/stats.svg
           test -f profile/top-langs.svg
 
-          echo "All cards generated successfully."
+          echo "All 3 cards were generated successfully."
 
 
       # =======================================================
