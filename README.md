@@ -76,25 +76,52 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
 
 ---
 
-### Actividad:
 
-# 📊 GitHub Stats
+<h1 align="center">GitHub Stats</h1>
 
-![](https://github-readme-stats.vercel.app/api?username=marianelapurretta&theme=tokyonight&hide_border=false&include_all_commits=true&count_private=true&show_icons=true)
+<p align="center">
+  <img
+    src="https://streak-stats.demolab.com?user=marianelapurretta&theme=dark&hide_border=false&border_radius=0&background=000000&stroke=808080&ring=BFBFBF&fire=BFBFBF&currStreakLabel=FFFFFF&sideLabels=E5E5E5&currStreakNum=FFFFFF&sideNums=FFFFFF&dates=8F8F8F&card_width=495"
+    width="495"
+    alt="Racha de GitHub"
+  />
+</p>
 
-<br/>
+<p align="center">
+  <img
+    src="./profile/last-12-months.svg"
+    width="495"
+    alt="Actividad de los últimos 12 meses"
+  />
+</p>
 
-![](https://streak-stats.demolab.com/?user=marianelapurretta&theme=tokyonight&hide_border=false)
+<p align="center">
+  <img
+    src="./profile/stats.svg"
+    width="495"
+    alt="Estadísticas de GitHub"
+  />
+</p>
 
-<br/>
+<p align="center">
+  <img
+    src="./profile/stack.svg"
+    width="495"
+    alt="Stack principal"
+  />
+</p>
 
-![](https://github-readme-stats.vercel.app/api/top-langs/?username=marianelapurretta&theme=tokyonight&hide_border=false&layout=compact)
+<hr/>
 
----
+<h2 align="center">Repositorio destacado</h2>
 
-### 🔝 Top Contributed Repo
-
-![](https://github-contributor-stats.vercel.app/api?username=marianelapurretta&limit=5&theme=tokyonight&combine_all_yearly_contributions=true)
+<p align="center">
+  <img
+    src="./profile/bitacora.svg"
+    width="495"
+    alt="Bitácora - repositorio destacado"
+  />
+</p>
 
 ---
 
