@@ -123,11 +123,17 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
   />
 </p>
 
+
 ---
+<h2 align="center">🏆 Logros de GitHub</h2>
 
-## 🏆 GitHub Trophies
-
-![](https://github-profile-trophy.vercel.app/?username=marianelapurretta&theme=tokyonight&no-frame=false&no-bg=true&margin-w=4)
+<p align="center">
+  <img
+    src="./profile/trophies.svg"
+    width="495"
+    alt="Logros de GitHub"
+  />
+</p>
 
 ---
 
