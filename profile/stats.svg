@@ -9,11 +9,11 @@
         aria-labelledby="descId"
       >
         <title id="titleId">Estad&#237;sticas de GitHub de Marianela, Rank: B</title>
-        <desc id="descId">Estrellas totales: 12, Commits totales  : 2053, PRs totales: 105, Issues totales: 28, Contribuciones en (el a&#241;o pasado): 1</desc>
+        <desc id="descId">Estrellas totales: 12, Commits totales  : 2054, PRs totales: 105, Issues totales: 28, Contribuciones en (el a&#241;o pasado): 1</desc>
         <style>
           .header {
             font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif;
-            fill: #FFA500;
+            fill: #FFFFFF;
             animation: fadeInAnimation 0.8s ease-in-out forwards;
           }
           @supports(-moz-appearance: auto) {
@@ -22,7 +22,7 @@
           }
           
     .stat {
-      font: 600 14px 'Segoe UI', Ubuntu, "Helvetica Neue", Sans-Serif; fill: #FFFFFF;
+      font: 600 14px 'Segoe UI', Ubuntu, "Helvetica Neue", Sans-Serif; fill: #E5E5E5;
     }
     @supports(-moz-appearance: auto) {
       /* Selector detects Firefox */
@@ -33,7 +33,7 @@
       animation: fadeInAnimation 0.3s ease-in-out forwards;
     }
     .rank-text {
-      font: 800 24px 'Segoe UI', Ubuntu, Sans-Serif; fill: #FFFFFF;
+      font: 800 24px 'Segoe UI', Ubuntu, Sans-Serif; fill: #E5E5E5;
       animation: scaleInAnimation 0.3s ease-in-out forwards;
     }
     .rank-percentile-header {
@@ -46,18 +46,18 @@
     .not_bold { font-weight: 400 }
     .bold { font-weight: 700 }
     .icon {
-      fill: #FFA500;
+      fill: #BFBFBF;
       display: block;
     }
 
     .rank-circle-rim {
-      stroke: #FFA500;
+      stroke: #FFFFFF;
       fill: none;
       stroke-width: 6;
       opacity: 0.2;
     }
     .rank-circle {
-      stroke: #FFA500;
+      stroke: #FFFFFF;
       stroke-dasharray: 250;
       fill: none;
       stroke-width: 6;
@@ -73,7 +73,7 @@
         stroke-dashoffset: 251.32741228718345;
       }
       to {
-        stroke-dashoffset: 134.5270915503412;
+        stroke-dashoffset: 134.52009717421603;
       }
     }
   
@@ -114,9 +114,9 @@
           class="card-bg"
           x="0.5"
           y="0.5"
-          rx="4.5"
+          rx="0"
           height="99%"
-          stroke="#FFFFFF"
+          stroke="#808080"
           width="494"
           fill="#000000"
           stroke-opacity="1"
@@ -184,7 +184,7 @@
         x="274.01"
         y="12.5"
         data-testid="commits"
-      >2053</text>
+      >2054</text>
     </g>
   </g><g transform="translate(0, 50)">
     <g class="stagger" style="animation-delay: 750ms" transform="translate(25, 0)">
