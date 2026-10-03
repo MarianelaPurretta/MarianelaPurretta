@@ -60,7 +60,9 @@ jobs:
 
 
       # =======================================================
-      # CARD 1 - ÚLTIMOS 12 MESES
+      # CARD 1
+      # ACTIVIDAD ÚLTIMOS 12 MESES
+      # COMMITS + CONTRIBUCIONES
       # =======================================================
 
       - name: Generate last 12 months card
@@ -82,7 +84,9 @@ jobs:
                 user(login: $login) {
                   contributionsCollection(from: $from, to: $to) {
                     totalCommitContributions
-                    totalPullRequestContributions
+                    contributionCalendar {
+                      totalContributions
+                    }
                   }
                 }
               }
@@ -99,8 +103,8 @@ jobs:
             '.data.user.contributionsCollection.totalCommitContributions' \
             contribution-data.json)
 
-          PRS=$(jq -r \
-            '.data.user.contributionsCollection.totalPullRequestContributions' \
+          CONTRIBUTIONS=$(jq -r \
+            '.data.user.contributionsCollection.contributionCalendar.totalContributions' \
             contribution-data.json)
 
           if [ "$COMMITS" = "null" ] || [ -z "$COMMITS" ]; then
@@ -108,24 +112,24 @@ jobs:
             exit 1
           fi
 
-          if [ "$PRS" = "null" ] || [ -z "$PRS" ]; then
-            echo "Could not obtain Pull Request statistics."
+          if [ "$CONTRIBUTIONS" = "null" ] || [ -z "$CONTRIBUTIONS" ]; then
+            echo "Could not obtain contribution statistics."
             exit 1
           fi
 
           echo "Commits last 12 months: $COMMITS"
-          echo "Pull Requests last 12 months: $PRS"
+          echo "Contributions last 12 months: $CONTRIBUTIONS"
 
           mkdir -p profile
 
           export COMMITS
-          export PRS
+          export CONTRIBUTIONS
 
           python3 <<'PY'
           import os
 
           commits = os.environ["COMMITS"]
-          prs = os.environ["PRS"]
+          contributions = os.environ["CONTRIBUTIONS"]
 
           svg = f'''<svg width="495" height="195"
             viewBox="0 0 495 195"
@@ -136,16 +140,16 @@ jobs:
               y="0.5"
               width="494"
               height="194"
-              rx="4.5"
+              rx="0"
               fill="#000000"
-              stroke="#FFFFFF"
+              stroke="#808080"
             />
 
             <text
               x="247.5"
               y="38"
               text-anchor="middle"
-              fill="#FFA500"
+              fill="#FFFFFF"
               font-family="Arial, sans-serif"
               font-size="19"
               font-weight="700">
@@ -157,8 +161,8 @@ jobs:
               y1="62"
               x2="247.5"
               y2="158"
-              stroke="#FFFFFF"
-              opacity="0.55"
+              stroke="#808080"
+              opacity="0.75"
             />
 
             <text
@@ -176,7 +180,7 @@ jobs:
               x="125"
               y="135"
               text-anchor="middle"
-              fill="#FFA500"
+              fill="#BFBFBF"
               font-family="Arial, sans-serif"
               font-size="15"
               font-weight="700">
@@ -191,25 +195,25 @@ jobs:
               font-family="Arial, sans-serif"
               font-size="34"
               font-weight="700">
-              {prs}
+              {contributions}
             </text>
 
             <text
               x="370"
               y="135"
               text-anchor="middle"
-              fill="#FFA500"
+              fill="#BFBFBF"
               font-family="Arial, sans-serif"
               font-size="15"
               font-weight="700">
-              Pull Requests
+              Contribuciones
             </text>
 
             <text
               x="247.5"
               y="174"
               text-anchor="middle"
-              fill="#AAAAAA"
+              fill="#8F8F8F"
               font-family="Arial, sans-serif"
               font-size="11">
               Actividad registrada durante los últimos 12 meses
@@ -217,49 +221,161 @@ jobs:
 
           </svg>'''
 
-          with open(
-              "profile/last-12-months.svg",
-              "w",
-              encoding="utf-8"
-          ) as file:
+          output = "profile/last-12-months.svg"
+
+          with open(output, "w", encoding="utf-8") as file:
               file.write(svg)
 
-          print("Generated: profile/last-12-months.svg")
-          print(f"Commits: {commits}")
-          print(f"Pull Requests: {prs}")
+          print(f"Generated: {output}")
           PY
 
 
       # =======================================================
-      # CARD 2 - ESTADÍSTICAS GENERALES
+      # CARD 2
+      # ESTADÍSTICAS GENERALES
       # =======================================================
 
       - name: Generate stats card
         uses: stats-organization/github-readme-stats-action@v2
         with:
           card: stats
-          options: username=${{ github.repository_owner }}&show_icons=true&include_all_commits=true&count_private=true&number_format=long&card_width=495&bg_color=000000&title_color=FFA500&text_color=FFFFFF&icon_color=FFA500&border_color=FFFFFF&locale=es
+          options: username=${{ github.repository_owner }}&show_icons=true&include_all_commits=true&count_private=true&number_format=long&card_width=495&bg_color=000000&title_color=FFFFFF&text_color=E5E5E5&icon_color=BFBFBF&border_color=808080&border_radius=0&locale=es
           path: profile/stats.svg
           token: ${{ secrets.STATS_PAT }}
           fail_on_error: true
 
 
       # =======================================================
-      # CARD 3 - LENGUAJES
+      # CARD 3
+      # LENGUAJES SOLO DEL REPO BITACORA
       # =======================================================
 
-      - name: Generate top languages card
-        uses: stats-organization/github-readme-stats-action@v2
-        with:
-          card: top-langs
-          options: username=${{ github.repository_owner }}&layout=compact&langs_count=6&card_width=495&bg_color=000000&title_color=FFA500&text_color=FFFFFF&border_color=FFFFFF&locale=es
-          path: profile/top-langs.svg
-          token: ${{ secrets.STATS_PAT }}
-          fail_on_error: true
+      - name: Generate Bitacora languages card
+        env:
+          STATS_PAT: ${{ secrets.STATS_PAT }}
+        run: |
+          CLEAN_TOKEN=$(printf '%s' "$STATS_PAT" | tr -d '\r\n')
+
+          curl -s \
+            -H "Authorization: Bearer $CLEAN_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/MarianelaPurretta/Bitacora/languages \
+            > bitacora-languages.json
+
+          echo "Bitacora languages:"
+          jq . bitacora-languages.json
+
+          MESSAGE=$(jq -r '.message // empty' bitacora-languages.json)
+
+          if [ -n "$MESSAGE" ]; then
+            echo "GitHub API error: $MESSAGE"
+            exit 1
+          fi
+
+          mkdir -p profile
+
+          python3 <<'PY'
+          import json
+
+          with open("bitacora-languages.json", encoding="utf-8") as f:
+              languages = json.load(f)
+
+          if not languages:
+              raise RuntimeError("No language data returned for Bitacora")
+
+          total = sum(languages.values())
+
+          ordered = sorted(
+              languages.items(),
+              key=lambda item: item[1],
+              reverse=True
+          )[:6]
+
+          rows = []
+
+          start_y = 88
+
+          for index, (language, value) in enumerate(ordered):
+              percentage = (value / total) * 100
+              y = start_y + (index * 18)
+
+              rows.append(
+                  f'''
+                  <text
+                    x="90"
+                    y="{y}"
+                    fill="#E5E5E5"
+                    font-family="Arial, sans-serif"
+                    font-size="13">
+                    {language}
+                  </text>
+
+                  <text
+                    x="405"
+                    y="{y}"
+                    text-anchor="end"
+                    fill="#BFBFBF"
+                    font-family="Arial, sans-serif"
+                    font-size="13">
+                    {percentage:.2f}%
+                  </text>
+                  '''
+              )
+
+          rows_svg = "".join(rows)
+
+          svg = f'''<svg width="495" height="195"
+            viewBox="0 0 495 195"
+            xmlns="http://www.w3.org/2000/svg">
+
+            <rect
+              x="0.5"
+              y="0.5"
+              width="494"
+              height="194"
+              rx="0"
+              fill="#000000"
+              stroke="#808080"
+            />
+
+            <text
+              x="247.5"
+              y="36"
+              text-anchor="middle"
+              fill="#FFFFFF"
+              font-family="Arial, sans-serif"
+              font-size="19"
+              font-weight="700">
+              Lenguajes en Bitacora
+            </text>
+
+            <text
+              x="247.5"
+              y="57"
+              text-anchor="middle"
+              fill="#8F8F8F"
+              font-family="Arial, sans-serif"
+              font-size="11">
+              Distribución detectada por GitHub
+            </text>
+
+            {rows_svg}
+
+          </svg>'''
+
+          with open(
+              "profile/bitacora-langs.svg",
+              "w",
+              encoding="utf-8"
+          ) as f:
+              f.write(svg)
+
+          print("Generated: profile/bitacora-langs.svg")
+          PY
 
 
       # =======================================================
-      # VERIFICAR ARCHIVOS
+      # VERIFICAR CARDS
       # =======================================================
 
       - name: Verify generated cards
@@ -269,7 +385,7 @@ jobs:
 
           test -f profile/last-12-months.svg
           test -f profile/stats.svg
-          test -f profile/top-langs.svg
+          test -f profile/bitacora-langs.svg
 
           echo "All 3 cards generated successfully."
 
@@ -281,11 +397,12 @@ jobs:
       - name: Commit updated cards
         run: |
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add profile/last-12-months.svg
           git add profile/stats.svg
-          git add profile/top-langs.svg
+          git add profile/bitacora-langs.svg
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
