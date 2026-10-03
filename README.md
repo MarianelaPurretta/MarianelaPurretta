@@ -2,13 +2,27 @@
 
 <div align="center">
 
-<img src ="https://media.giphy.com/media/MMnzoF2qdznMWzWE86/giphy-downsized-large.gif" width="100"/>
+<p align="center">
+  <img
+    src="./assets/997c72526b1765a287c3f2a5b53c861e.gif"
+    alt="Bandera"
+    width="120"
+  />
+</p>
+
+---
 
 # Hola, soy Marianela
-
-<img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZWI2dG9qODl0ejF4ZTJxeDV4YjB3Nm0zZG1hZmxhNWxiMnh4ZGE2NSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/CuuSHzuc0O166MRfjt/giphy.gif" width="250" />
+<p align="center">
+  <img
+    src="./assets/I%20Like%20Pressing%20Buttons.png"
+    alt="I Like Pressing Buttons"
+    width="420"
+  />
+</p>
 
 ### Desarrolladora Full Stack | Desarrollo de Software Asistida por IA
+
 ### Análisis Técnico-Funcional | Seguridad de Aplicaciones
 
 Soy Desarrolladora Full Stack con experiencia trabajando de punta a punta sobre aplicaciones empresariales, combinando análisis de requerimientos, desarrollo frontend y backend, APIs, bases de datos, debugging, testing, seguridad y documentación.
@@ -23,7 +37,12 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
 
 <h2 align="center">Tecnologías y Herramientas</h2>
 
+
+
 <h3 align="center">Frontend</h3>
+
+---
+
 <p align="center">
   <img src="./assets/react.png" title="React" alt="React" width="55"/>
   &nbsp;&nbsp;
@@ -36,7 +55,12 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
   <img src="./assets/css.png" title="CSS3" alt="CSS3" width="55"/>
 </p>
 
+---
+
 <h3 align="center">Backend</h3>
+
+---
+
 <p align="center">
   <img src="./assets/java.png" title="Java" alt="Java" width="55"/>
   &nbsp;&nbsp;
@@ -45,7 +69,12 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
   <img src="./assets/PYTHON.png" title="Python" alt="Python" width="55"/>
 </p>
 
+---
+
 <h3 align="center">Bases de datos</h3>
+
+---
+
 <p align="center">
   <img src="./assets/mysql.png" title="MySQL" alt="MySQL" width="55"/>
   &nbsp;&nbsp;
@@ -54,7 +83,12 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
   <img src="./assets/redis.png" title="Redis" alt="Redis" width="55"/>
 </p>
 
+---
+
 <h3 align="center">Cloud, DevOps y APIs</h3>
+
+---
+
 <p align="center">
   <img src="./assets/aws.png" title="AWS" alt="AWS" width="55"/>
   &nbsp;&nbsp;
@@ -68,6 +102,9 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
 </p>
 
 <h3 align="center">IA aplicada al desarrollo</h3>
+
+---
+
 <p align="center">
   <img src="./assets/chatgpt.png" title="ChatGPT" alt="ChatGPT" width="55"/>
   &nbsp;&nbsp;
@@ -77,7 +114,7 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
 ---
 
 
-<h1 align="center">GitHub Stats</h1>
+<h2 align="center">GitHub Stats</h2>
 
 <p align="center">
   <img
@@ -123,29 +160,12 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
   />
 </p>
 
-
 ---
-<h2 align="center">🏆 Logros de GitHub</h2>
+
+<h2 align="center">Panel de Actividad</h2>
 
 <p align="center">
-  <img
-    src="./profile/trophies.svg"
-    width="495"
-    alt="Logros de GitHub"
-  />
+  <img src="./assets/Panel de GitHub en Escala de Grises.png" alt="Panel de actividad de Marianela" width="900" />
 </p>
-
----
-
-<a href="https://next.ossinsight.io/widgets/official/compose-user-dashboard-stats?user_id=135768183" target="_blank" style="display: block" align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://next.ossinsight.io/widgets/official/compose-user-dashboard-stats/thumbnail.png?user_id=135768183&image_size=auto&color_scheme=dark" width="771" height="auto">
-    <img alt="Dashboard stats of @MarianelaPurretta" src="https://next.ossinsight.io/widgets/official/compose-user-dashboard-stats/thumbnail.png?user_id=135768183&image_size=auto&color_scheme=light" width="771" height="auto">
-  </picture>
-</a>
-
----
-
-[![](https://visitcount.itsvg.in/api?id=MarianelaPurretta&icon=6&color=4)](https://visitcount.itsvg.in)
 
 
