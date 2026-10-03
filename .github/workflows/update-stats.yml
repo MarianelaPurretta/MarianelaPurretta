@@ -16,6 +16,35 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Check PAT rate limit
+        env:
+          STATS_PAT: ${{ secrets.STATS_PAT }}
+        run: |
+          echo "GitHub API rate limit:"
+          curl -s \
+            -H "Authorization: Bearer $STATS_PAT" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/rate_limit \
+            | jq '.rate | {limit, remaining, reset}'
+
+      - name: Check Bitacora access
+        env:
+          STATS_PAT: ${{ secrets.STATS_PAT }}
+        run: |
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $STATS_PAT" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/MarianelaPurretta/Bitacora)
+
+          echo "Bitacora API status: $STATUS"
+
+          if [ "$STATUS" != "200" ]; then
+            echo "PAT cannot access Bitacora"
+            exit 1
+          fi
+
       - name: Generate stats card
         uses: stats-organization/github-readme-stats-action@v2
         with:
@@ -23,6 +52,7 @@ jobs:
           options: username=${{ github.repository_owner }}&show_icons=true&include_all_commits=true&theme=tokyonight&locale=es
           path: profile/stats.svg
           token: ${{ secrets.STATS_PAT }}
+          fail_on_error: true
 
       - name: Generate top languages card
         uses: stats-organization/github-readme-stats-action@v2
@@ -31,6 +61,7 @@ jobs:
           options: username=${{ github.repository_owner }}&layout=compact&langs_count=8&theme=tokyonight&locale=es
           path: profile/top-langs.svg
           token: ${{ secrets.STATS_PAT }}
+          fail_on_error: true
 
       - name: Commit updated cards
         run: |
