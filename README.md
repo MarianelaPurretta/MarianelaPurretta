@@ -1,47 +1,65 @@
----
 
 <div align="center">
 
-<p align="center">
-  <img
-    src="./assets/997c72526b1765a287c3f2a5b53c861e.gif"
-    alt="Bandera"
-    width="120"
-  />
+<h1>Hola, soy Marianela 👋</h1>
+
+<h2>
+  <strong>Full Stack Developer</strong> ·
+  <strong>Software Development with AI</strong> ·
+  <strong>Technical & Functional Analysis</strong>
+</h2>
+
+<h3>
+  Desarrollo de software · Seguridad de aplicaciones · Automatización · IA aplicada
+</h3>
+
+<br>
+
+<img
+  src="./assets/I%20Like%20Pressing%20Buttons.png"
+  alt="I Like Pressing Buttons"
+  width="460"
+/>
+
+<br><br>
+
+<h3>Desarrollo de punta a punta · IA aplicada · Seguridad</h3>
+
+<p>
+  Soy <strong>Full Stack Developer</strong> y disfruto trabajar en soluciones de punta a punta,
+  desde el análisis del problema hasta la implementación, las pruebas y la documentación.
 </p>
 
----
-
-# Hola, soy Marianela
-<p align="center">
-  <img
-    src="./assets/I%20Like%20Pressing%20Buttons.png"
-    alt="I Like Pressing Buttons"
-    width="420"
-  />
+<p>
+  Trabajo con <strong>frontend, backend, APIs y bases de datos</strong>,
+  integrando <strong>Inteligencia Artificial</strong> como parte de mi flujo diario
+  para analizar código, investigar errores, diseñar soluciones, automatizar tareas
+  y mejorar procesos de desarrollo.
 </p>
 
-### Desarrolladora Full Stack | Desarrollo de Software Asistida por IA
+<p>
+  Me interesa especialmente entender cómo funciona cada sistema en profundidad,
+  combinando <strong>análisis técnico y funcional, debugging, seguridad y testing</strong>
+  para construir soluciones simples, seguras y mantenibles.
+</p>
 
-### Análisis Técnico-Funcional | Seguridad de Aplicaciones
+<br>
 
-Soy Desarrolladora Full Stack con experiencia trabajando de punta a punta sobre aplicaciones empresariales, combinando análisis de requerimientos, desarrollo frontend y backend, APIs, bases de datos, debugging, testing, seguridad y documentación.
-
-Integro Inteligencia Artificial de forma transversal en mi flujo de trabajo para análisis de requerimientos, comprensión de codebases, debugging, análisis de causa raíz, diseño de soluciones, revisión de código, testing y documentación.
-
-Trabajo con foco en soluciones simples, seguras y verificables, validando siempre contra código real, APIs, bases de datos, logs y comportamiento del sistema.
-
-</div>
+<code>ANALYZE</code>
+&nbsp;•&nbsp;
+<code>BUILD</code>
+&nbsp;•&nbsp;
+<code>DEBUG</code>
+&nbsp;•&nbsp;
+<code>TEST</code>
+&nbsp;•&nbsp;
+<code>DOCUMENT</code>
 
 ---
 
 <h2 align="center">Tecnologías y Herramientas</h2>
 
-
-
 <h3 align="center">Frontend</h3>
-
----
 
 <p align="center">
   <img src="./assets/react.png" title="React" alt="React" width="55"/>
@@ -55,11 +73,7 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
   <img src="./assets/css.png" title="CSS3" alt="CSS3" width="55"/>
 </p>
 
----
-
 <h3 align="center">Backend</h3>
-
----
 
 <p align="center">
   <img src="./assets/java.png" title="Java" alt="Java" width="55"/>
@@ -69,11 +83,7 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
   <img src="./assets/PYTHON.png" title="Python" alt="Python" width="55"/>
 </p>
 
----
-
 <h3 align="center">Bases de datos</h3>
-
----
 
 <p align="center">
   <img src="./assets/mysql.png" title="MySQL" alt="MySQL" width="55"/>
@@ -83,11 +93,7 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
   <img src="./assets/redis.png" title="Redis" alt="Redis" width="55"/>
 </p>
 
----
-
 <h3 align="center">Cloud, DevOps y APIs</h3>
-
----
 
 <p align="center">
   <img src="./assets/aws.png" title="AWS" alt="AWS" width="55"/>
@@ -103,8 +109,6 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
 
 <h3 align="center">IA aplicada al desarrollo</h3>
 
----
-
 <p align="center">
   <img src="./assets/chatgpt.png" title="ChatGPT" alt="ChatGPT" width="55"/>
   &nbsp;&nbsp;
@@ -112,7 +116,6 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
 </p>
 
 ---
-
 
 <h2 align="center">GitHub Stats</h2>
 
@@ -148,7 +151,17 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
   />
 </p>
 
-<hr/>
+---
+
+<p align="center">
+  <img
+    src="./profile/contribution-18-months.svg"
+    alt="Actividad de GitHub de los últimos 18 meses"
+    width="980"
+  />
+</p>
+
+---
 
 <h2 align="center">Repositorio destacado</h2>
 
@@ -165,7 +178,9 @@ Trabajo con foco en soluciones simples, seguras y verificables, validando siempr
 <h2 align="center">Panel de Actividad</h2>
 
 <p align="center">
-  <img src="./assets/Panel de GitHub en Escala de Grises.png" alt="Panel de actividad de Marianela" width="900" />
+  <img
+    src="./assets/Panel%20de%20GitHub%20en%20Escala%20de%20Grises.png"
+    alt="Panel de actividad de Marianela"
+    width="900"
+  />
 </p>
-
-
